@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes_app/screens/create_notes.dart';
 import 'package:notes_app/screens/home.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           textTheme: GoogleFonts.poppinsTextTheme()),
       home: HomeScreen(),
+      routes: {'create': (context) => CreateNotes()},
     );
   }
 }
