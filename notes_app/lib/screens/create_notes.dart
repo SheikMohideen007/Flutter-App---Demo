@@ -15,13 +15,12 @@ class _CreateNotesState extends State<CreateNotes> {
   Color defaultColor = Colors.white;
   List<bool> tickValue = [false, false, false, false, false, false];
   DateTime dt = DateTime.now();
+  TimeOfDay tf = TimeOfDay.now();
   @override
   Widget build(BuildContext context) {
-    print(dt);
-    String date = dt.toString().split(" ")[0];
-    String time = dt.toString().split(" ")[1].split(".")[0];
     devHeight = MediaQuery.of(context).size.height;
     devWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: defaultColor,
       appBar: AppBar(
@@ -37,59 +36,7 @@ class _CreateNotesState extends State<CreateNotes> {
               icon: FaIcon(FontAwesomeIcons.mapPin, size: 25)),
           IconButton(
               onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text('When to remind ?'),
-                        content: SizedBox(
-                          height: devHeight * 0.13,
-                          child: Column(
-                            children: [
-                              TextFormField(
-                                initialValue: date,
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                    isDense: true,
-                                    border: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    suffixIcon: IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.calendar_month))),
-                              ),
-                              SizedBox(height: devHeight * 0.02),
-                              TextFormField(
-                                initialValue: time,
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                    isDense: true,
-                                    border: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    suffixIcon: IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.alarm_add))),
-                              ),
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          TextButton(onPressed: () {}, child: Text('Cancel')),
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.orange),
-                              onPressed: () {},
-                              child: Text('Save'))
-                        ],
-                      );
-                    });
+                reminderAlert(context);
               },
               icon: FaIcon(FontAwesomeIcons.bell, size: 25)),
           IconButton(
@@ -113,21 +60,105 @@ class _CreateNotesState extends State<CreateNotes> {
     );
   }
 
+  Future<dynamic> reminderAlert(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('When to remind ?'),
+            content: SizedBox(
+              height: devHeight * 0.13,
+              child: Column(
+                children: [
+                  TextFormField(
+                    initialValue: dt.toString().split(" ")[0],
+                    readOnly: true,
+                    decoration: InputDecoration(
+                        isDense: true,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey)),
+                        suffixIcon: IconButton(
+                            onPressed: () async {
+                              final pickedDate = await showDatePicker(
+                                  context: context,
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(2026),
+                                  initialDate: DateTime.now());
+
+                              if (pickedDate != null) {
+                                setState(() {
+                                  dt = pickedDate;
+                                  print(dt);
+                                });
+                              } else {
+                                dt = DateTime.now();
+                              }
+
+                              Navigator.pop(context);
+
+                              print('picked Date by user is : $pickedDate');
+                            },
+                            icon: Icon(Icons.calendar_month))),
+                  ),
+                  SizedBox(height: devHeight * 0.02),
+                  TextFormField(
+                    initialValue: tf.toString().split("(")[1].split(")")[0],
+                    readOnly: true,
+                    decoration: InputDecoration(
+                        isDense: true,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey)),
+                        suffixIcon: IconButton(
+                            onPressed: () async {
+                              final pickedTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now());
+
+                              if (pickedTime != null) {
+                                setState(() {
+                                  tf = pickedTime;
+                                  print(tf);
+                                });
+                              } else {
+                                tf = TimeOfDay.now();
+                              }
+                            },
+                            icon: Icon(Icons.alarm_add))),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () {}, child: Text('Cancel')),
+              ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                  onPressed: () {},
+                  child: Text('Save'))
+            ],
+          );
+        });
+  }
+
   //to choose a color for a particular note
   Future<dynamic> colorPalette(BuildContext context) {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
-          return SizedBox(
-            height: devHeight * 0.2,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: devWidth * 0.02),
-              child: StatefulBuilder(builder: (context, setModalState) {
-                return Row(
+          return StatefulBuilder(builder: (context, setModalState) {
+            return SizedBox(
+              height: devHeight * 0.2,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: devWidth * 0.02),
+                child: Row(
                   children: [
                     colorContainer(
                         color: Colors.orangeAccent.shade100,
-                        tickVal: tickValue[0],
+                        id: 0,
                         onTap: () {
                           setModalState(() {
                             defaultColor = Colors.orangeAccent.shade100;
@@ -136,7 +167,7 @@ class _CreateNotesState extends State<CreateNotes> {
                         }),
                     colorContainer(
                         color: Colors.blueAccent.shade100,
-                        tickVal: tickValue[1],
+                        id: 1,
                         onTap: () {
                           setModalState(() {
                             defaultColor = Colors.blueAccent.shade100;
@@ -145,7 +176,7 @@ class _CreateNotesState extends State<CreateNotes> {
                         }),
                     colorContainer(
                         color: Colors.greenAccent.shade100,
-                        tickVal: tickValue[2],
+                        id: 2,
                         onTap: () {
                           setModalState(() {
                             defaultColor = Colors.greenAccent.shade100;
@@ -153,7 +184,7 @@ class _CreateNotesState extends State<CreateNotes> {
                         }),
                     colorContainer(
                         color: Colors.pinkAccent.shade100,
-                        tickVal: tickValue[3],
+                        id: 3,
                         onTap: () {
                           setModalState(() {
                             defaultColor = Colors.pinkAccent.shade100;
@@ -161,7 +192,7 @@ class _CreateNotesState extends State<CreateNotes> {
                         }),
                     colorContainer(
                         color: Colors.redAccent.shade100,
-                        tickVal: tickValue[4],
+                        id: 4,
                         onTap: () {
                           setModalState(() {
                             defaultColor = Colors.redAccent.shade100;
@@ -169,25 +200,32 @@ class _CreateNotesState extends State<CreateNotes> {
                         }),
                     colorContainer(
                         color: Colors.yellowAccent.shade100,
-                        tickVal: tickValue[5],
+                        id: 5,
                         onTap: () {
                           setModalState(() {
                             defaultColor = Colors.yellowAccent.shade100;
                           });
                         }),
                   ],
-                );
-              }),
-            ),
-          );
+                ),
+              ),
+            );
+          });
         });
   }
 
   //color palette -> for choosing color
   Widget colorContainer(
       {required Color color,
-      required bool tickVal,
+      required int id,
       required GestureTapCallback onTap}) {
+    for (int i = 0; i < tickValue.length; i++) {
+      if (i == id) {
+        tickValue[i] = true;
+      } else {
+        tickValue[i] = false;
+      }
+    }
     return Padding(
       padding: EdgeInsets.only(right: devWidth * 0.01),
       child: GestureDetector(
@@ -201,7 +239,7 @@ class _CreateNotesState extends State<CreateNotes> {
                   color: color, borderRadius: BorderRadius.circular(20)),
             ),
             Visibility(
-              visible: tickVal,
+              visible: false,
               replacement: SizedBox(),
               child: Padding(
                 padding: EdgeInsets.only(
