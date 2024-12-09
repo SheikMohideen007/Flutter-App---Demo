@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:notes_app/DB/firestore_db.dart';
 
 class CreateNotes extends StatefulWidget {
   const CreateNotes({super.key});
@@ -23,6 +24,31 @@ class _CreateNotesState extends State<CreateNotes> {
 
     return Scaffold(
       backgroundColor: defaultColor,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          String dateStr = dt.toString().split(' ')[0];
+          String timeStr = tf.toString().split('(')[1].substring(0, 5);
+          if (title.text.trim().isNotEmpty &&
+              description.text.trim().isNotEmpty) {
+            // print('here..true');
+            //saving to DB
+            await DBFirestore.createNotes(
+                title: title.text,
+                description: description.text,
+                date: dateStr,
+                time: timeStr,
+                color: defaultColor.toString());
+
+            Navigator.pop(context);
+          } else {
+            // print('here..false');
+            final snack = SnackBar(
+                content: Text('title & description should not be empty'));
+            ScaffoldMessenger.of(context).showSnackBar(snack);
+          }
+        },
+        child: Icon(Icons.save),
+      ),
       appBar: AppBar(
         backgroundColor: defaultColor,
         leading: IconButton(
@@ -133,11 +159,17 @@ class _CreateNotesState extends State<CreateNotes> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () {}, child: Text('Cancel')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Cancel')),
               ElevatedButton(
                   style:
                       ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: Text('Save'))
             ],
           );
