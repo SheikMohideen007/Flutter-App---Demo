@@ -30,14 +30,30 @@ class DBFirestore {
     }
   }
 
-  static updateNotes() {
-    try {} catch (e) {
+  static updateNotes(
+      {required String title,
+      required String description,
+      required String date,
+      required String time,
+      required String color,
+      required String docId}) {
+    try {
+      return firestore.collection('Notes').doc(docId).update({
+        'title': title,
+        'description': description,
+        'date': date,
+        'time': time,
+        'color': color
+      });
+    } catch (e) {
       print('$e');
     }
   }
 
-  static deleteNotes() {
-    try {} catch (e) {
+  static deleteNotes({required String docId}) {
+    try {
+      return firestore.collection('Notes').doc(docId).delete();
+    } catch (e) {
       print('$e');
     }
   }

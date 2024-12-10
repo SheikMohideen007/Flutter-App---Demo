@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/DB/firestore_db.dart';
 import 'package:notes_app/screens/create_notes.dart';
+import 'package:notes_app/screens/update_notes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -135,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: notesLength,
                         itemBuilder: (context, index) {
                           DocumentSnapshot ds = snapshot.data!.docs[index];
+                          String docId = ds.id;
                           Map<String, dynamic> note =
                               ds.data() as Map<String, dynamic>;
                           String colorStr = note['color'];
@@ -143,12 +145,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           Color color = Colors.blue;
                           color = getColor(colorStr);
                           print(color);
-                          return notesCard(
-                              col: color == Colors.white ? Colors.blue : color,
-                              title: note['title'],
-                              description: note['description'],
-                              date: note['date'],
-                              time: note['time']);
+                          return GestureDetector(
+                            onTap: () {
+                              print('from display screen ..$docId');
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => UpdateNotes(
+                                          id: docId,
+                                          title: note['title'],
+                                          description: note['description'],
+                                          date: note['date'],
+                                          time: note['time'],
+                                          color: color)));
+                            },
+                            child: notesCard(
+                                col:
+                                    color == Colors.white ? Colors.blue : color,
+                                title: note['title'],
+                                description: note['description'],
+                                date: note['date'],
+                                time: note['time']),
+                          );
                         },
                       );
                     }),
