@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:notes_app/DB/firestore_db.dart';
+import 'package:notes_app/auth/email_auth.dart';
+import 'package:notes_app/screens/auth_screen.dart';
 import 'package:notes_app/screens/create_notes.dart';
 import 'package:notes_app/screens/update_notes.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final User user;
+  const HomeScreen({super.key, required this.user});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -77,12 +81,14 @@ class _HomeScreenState extends State<HomeScreen> {
     // }
   ];
   double devHeight = 0.0, devWidth = 0.0;
+  // User? user;
   @override
   Widget build(BuildContext context) {
     devHeight = MediaQuery.of(context).size.height;
     devWidth = MediaQuery.of(context).size.width;
     // print(devHeight);
     // print(devWidth);
+
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -98,14 +104,27 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    height: devHeight * 0.06,
-                    width: devWidth * 0.12,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade400, shape: BoxShape.circle),
-                    child: Icon(Icons.person),
+                  Text('Signed in as ${widget.user.email}'),
+                  Row(
+                    children: [
+                      Text('Logout'),
+                      IconButton(
+                          onPressed: () {
+                            Authentication().signOut();
+                          },
+                          icon: Icon(Icons.logout)),
+                      SizedBox(width: devWidth * 0.01),
+                      Container(
+                        height: devHeight * 0.06,
+                        width: devWidth * 0.12,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade400,
+                            shape: BoxShape.circle),
+                        child: Icon(Icons.person),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/firebase_options.dart';
 import 'package:notes_app/screens/auth_screen.dart';
+import 'package:notes_app/screens/auth_validator.dart';
 import 'package:notes_app/screens/create_notes.dart';
 import 'package:notes_app/screens/display_notes.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
           textTheme: GoogleFonts.poppinsTextTheme()),
-      home: AuthScreen(),
+      home: AuthValidator(),
       routes: {'create': (context) => CreateNotes()},
     );
   }

@@ -22,4 +22,16 @@ class Authentication {
       print('$e');
     }
   }
+
+  signOut() async {
+    try {
+      await auth.signOut();
+    } catch (e) {
+      print('$e');
+    }
+  }
+
+  Stream<User?> checkinAuthStatus() {
+    return auth.authStateChanges();
+  }
 }

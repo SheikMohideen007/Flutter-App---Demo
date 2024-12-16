@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/auth/email_auth.dart';
 
@@ -16,6 +17,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     double devHeight = MediaQuery.of(context).size.height;
     double devWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -54,19 +56,42 @@ class _AuthScreenState extends State<AuthScreen> {
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white),
                 onPressed: () async {
+                  User? user;
                   if (email.text.trim() != "" && password.text.trim() != "") {
                     if (email.text.contains('@')) {
                       if (isRegister == true) {
-                        await Authentication().signIn(
+                        user = await Authentication().signIn(
                             email: email.text.trim(),
                             password: password.text.trim());
                       } else {
-                        await Authentication().signUp(
+                        user = await Authentication().signUp(
                             email: email.text.trim(),
                             password: password.text.trim());
                       }
                     } else {
-                      final snack = SnackBar(content: Text('Invalid Email'));
+                      final snack = SnackBar(
+                        content: Text('Invalid Email'),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snack);
+                    }
+
+                    if (user != null) {
+                      //succesfully signed in
+                      final snack = SnackBar(
+                        content: Text('Signed in as ${user.email}'),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snack);
+                    } else {
+                      //any problem in sign in
+                      final snack = SnackBar(
+                          content: Text('Signin Failed'),
+                          action: SnackBarAction(
+                              label: 'signup',
+                              onPressed: () {
+                                setState(() {
+                                  isRegister = false;
+                                });
+                              }));
                       ScaffoldMessenger.of(context).showSnackBar(snack);
                     }
                   } else {
