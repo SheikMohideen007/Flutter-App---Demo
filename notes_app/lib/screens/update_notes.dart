@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -47,7 +48,7 @@ class _UpdateNotesState extends State<UpdateNotes> {
   Widget build(BuildContext context) {
     devHeight = MediaQuery.of(context).size.height;
     devWidth = MediaQuery.of(context).size.width;
-
+    User? user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       backgroundColor: defaultColor,
       floatingActionButton: FloatingActionButton(
@@ -63,7 +64,8 @@ class _UpdateNotesState extends State<UpdateNotes> {
                 date: dateStr,
                 time: timeStr,
                 color: defaultColor.toString(),
-                docId: widget.id);
+                docId: widget.id,
+                uid: user!.uid);
 
             Navigator.pop(context);
           } else {
@@ -85,7 +87,7 @@ class _UpdateNotesState extends State<UpdateNotes> {
         actions: [
           IconButton(
               onPressed: () async {
-                await DBFirestore.deleteNotes(docId: widget.id);
+                await DBFirestore.deleteNotes(docId: widget.id, uid: user!.uid);
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Notes Deleted')));
                 Navigator.pop(context);

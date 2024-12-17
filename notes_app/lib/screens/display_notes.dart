@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:notes_app/DB/firestore_db.dart';
 import 'package:notes_app/auth/email_auth.dart';
 import 'package:notes_app/screens/auth_screen.dart';
@@ -18,74 +21,38 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Map<String, dynamic>> notesList = [
-    // {
-    //   'title': 'GYM',
-    //   'description': 'Get Shoes when going to gym',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.blue
-    // },
-    // {
-    //   'title': 'School',
-    //   'description': 'Get Shoes when going to gym',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.greenAccent
-    // },
-    // {
-    //   'title': 'College hshgs',
-    //   'description': 'Get Shoes when going to gym',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.blueAccent
-    // },
-    // {
-    //   'title': 'Office',
-    //   'description': 'Get Shoes when going to gym jjsb',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.orangeAccent
-    // },
-    // {
-    //   'title': 'Home',
-    //   'description': 'Get Shoes when going to gym',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.amberAccent
-    // },
-    // {
-    //   'title': 'GYM',
-    //   'description': 'Get Shoes when going to gym jhgsh',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.blue
-    // },
-    // {
-    //   'title': 'School',
-    //   'description': 'Get Shoes ',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.greenAccent
-    // },
-    // {
-    //   'title': 'College',
-    //   'description': 'Get Shoes when going to gym',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.blueAccent
-    // },
-    // {
-    //   'title': 'Office',
-    //   'description': 'Get Shoes when going to gym',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.orangeAccent
-    // },
-    // {
-    //   'title': 'Home',
-    //   'description': 'Get Shoes when going to gym',
-    //   'time': 'Today 9.00',
-    //   'color': Colors.amberAccent
-    // }
-  ];
+  List<Map<String, dynamic>> notesList = [];
   double devHeight = 0.0, devWidth = 0.0;
-  // User? user;
+  File? image; //to store image
+  final ImagePicker picker = ImagePicker(); //for imagepicker dependency object
+
+  //for picking the image from camera
+  pickImagefromCamera() async {
+    XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        image = File(pickedFile.path);
+      });
+    }
+  }
+
+  //for picking the image from camera
+  pickImagefromGallery() async {
+    XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        image = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     devHeight = MediaQuery.of(context).size.height;
     devWidth = MediaQuery.of(context).size.width;
+
     // print(devHeight);
     // print(devWidth);
 
@@ -116,13 +83,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           icon: Icon(Icons.logout)),
                       SizedBox(width: devWidth * 0.01),
-                      Container(
-                        height: devHeight * 0.06,
-                        width: devWidth * 0.12,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.shade400,
-                            shape: BoxShape.circle),
-                        child: Icon(Icons.person),
+                      GestureDetector(
+                        onTap: () {
+                          pickImagefromCamera();
+                        },
+                        child: Container(
+                          height: devHeight * 0.06,
+                          width: devWidth * 0.12,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade400,
+                              shape: BoxShape.circle),
+                          child: image == null
+                              ? Icon(Icons.person)
+                              : Image.file(image!),
+                        ),
                       ),
                     ],
                   ),
@@ -142,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                    stream: DBFirestore.readNotes(),
+                    stream: DBFirestore.readNotes(uid: widget.user.uid),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return Center(child: CircularProgressIndicator());

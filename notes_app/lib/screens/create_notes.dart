@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:notes_app/DB/firestore_db.dart';
@@ -17,6 +18,7 @@ class _CreateNotesState extends State<CreateNotes> {
   List<bool> tickValue = [false, false, false, false, false, false];
   DateTime dt = DateTime.now();
   TimeOfDay tf = TimeOfDay.now();
+  User? user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     devHeight = MediaQuery.of(context).size.height;
@@ -32,9 +34,11 @@ class _CreateNotesState extends State<CreateNotes> {
               description.text.trim().isNotEmpty) {
             // print('here..true');
             //saving to DB
+            // print('${user!.uid}');
             await DBFirestore.createNotes(
                 title: title.text,
                 description: description.text,
+                uid: user!.uid,
                 date: dateStr,
                 time: timeStr,
                 color: defaultColor.toString());

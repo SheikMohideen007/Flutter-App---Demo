@@ -8,9 +8,10 @@ class DBFirestore {
       required String description,
       required String date,
       required String time,
+      required String uid,
       required String color}) {
     try {
-      return firestore.collection('Notes').add({
+      return firestore.collection('Notes/$uid/subCollection').add({
         'title': title,
         'description': description,
         'date': date,
@@ -22,9 +23,9 @@ class DBFirestore {
     }
   }
 
-  static readNotes() {
+  static readNotes({required String uid}) {
     try {
-      return firestore.collection('Notes').snapshots();
+      return firestore.collection('Notes/$uid/subCollection').snapshots();
     } catch (e) {
       print('$e');
     }
@@ -36,9 +37,13 @@ class DBFirestore {
       required String date,
       required String time,
       required String color,
-      required String docId}) {
+      required String docId,
+      required String uid}) {
     try {
-      return firestore.collection('Notes').doc(docId).update({
+      return firestore
+          .collection('Notes/$uid/subCollection')
+          .doc(docId)
+          .update({
         'title': title,
         'description': description,
         'date': date,
@@ -50,9 +55,12 @@ class DBFirestore {
     }
   }
 
-  static deleteNotes({required String docId}) {
+  static deleteNotes({required String docId, required String uid}) {
     try {
-      return firestore.collection('Notes').doc(docId).delete();
+      return firestore
+          .collection('Notes/$uid/subCollection')
+          .doc(docId)
+          .delete();
     } catch (e) {
       print('$e');
     }
