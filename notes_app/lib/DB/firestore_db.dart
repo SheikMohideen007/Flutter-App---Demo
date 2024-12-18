@@ -65,4 +65,26 @@ class DBFirestore {
       print('$e');
     }
   }
+
+  static savingProfilePic({required String uid, required String downloadUrl}) {
+    try {
+      return firestore
+          .collection('Notes')
+          .doc(uid)
+          .update({'imageUrl': downloadUrl});
+      ;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static getProfilePic({required String uid}) async {
+    try {
+      DocumentSnapshot ds = await firestore.collection('Notes').doc(uid).get();
+      String url = ds['imageUrl'];
+      return url;
+    } catch (e) {
+      print(e);
+    }
+  }
 }

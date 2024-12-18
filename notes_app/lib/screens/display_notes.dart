@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,6 +46,35 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         image = File(pickedFile.path);
       });
+
+      uploadImage();
+    }
+  }
+
+//this is the fucntion to upload image to firebae storage
+  uploadImage() async {
+    if (image != null) {
+      try {
+        //instance of firebase storage
+        FirebaseStorage storage = FirebaseStorage.instance;
+        // creating a path to store a image
+        final ref = storage.ref().child('UsersProfilePic/${widget.user.uid}');
+        //upload a image
+        final uploadTask = ref.putFile(image!);
+
+        final uploadComplete = await uploadTask;
+        //get the download url
+        final downloadUrl = await uploadComplete.ref.getDownloadURL();
+
+        print(downloadUrl);
+
+        await DBFirestore.savingProfilePic(
+            uid: widget.user.uid, downloadUrl: downloadUrl);
+
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Uploaded Successfully')))
+      } catch (e) {
+        print('err is $e');
+      }
     }
   }
 
@@ -95,7 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               shape: BoxShape.circle),
                           child: image == null
                               ? Icon(Icons.person)
-                              : Image.file(image!),
+                              : Image.network(DBFirestore.getProfilePic(
+                                  uid: widget.user.uid)),
                         ),
                       ),
                     ],
