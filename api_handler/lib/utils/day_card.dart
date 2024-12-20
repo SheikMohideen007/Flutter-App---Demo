@@ -16,7 +16,10 @@ class DayCard extends StatefulWidget {
 }
 
 class _DayCardState extends State<DayCard> {
-  String currMaxTemp = "", currClimate = "", currdate = "", currMinTemp = "";
+  String currMaxTemp = "",
+      currClimate = "Sunny",
+      currdate = "",
+      currMinTemp = "";
 
   // @override
   // void initState() {
