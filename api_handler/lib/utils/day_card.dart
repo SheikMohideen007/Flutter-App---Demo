@@ -1,3 +1,5 @@
+import 'package:api_handler/model/forecast_weather.dart';
+import 'package:api_handler/services/api_services.dart';
 import 'package:flutter/material.dart';
 
 class DayCard extends StatefulWidget {
@@ -16,28 +18,25 @@ class DayCard extends StatefulWidget {
 }
 
 class _DayCardState extends State<DayCard> {
-  String currMaxTemp = "",
-      currClimate = "Sunny",
-      currdate = "",
-      currMinTemp = "";
+  String currMaxTemp = "", currClimate = "", currdate = "", currMinTemp = "";
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchForecastWeather();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    fetchForecastWeather();
+  }
 
-  // fetchForecastWeather() async {
-  //   Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
-  //   ForecastWeather weather = ForecastWeather.fromJson(json, widget.day);
-  //   setState(() {
-  //     currMaxTemp = weather.maxTemp.toString();
-  //     currClimate = weather.climate;
-  //     currdate = weather.date;
-  //     currMinTemp = weather.minTemp.toString();
-  //     print(currClimate + "...");
-  //   });
-  // }
+  fetchForecastWeather() async {
+    Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
+    ForecastWeather weather = ForecastWeather.fromJson(json, widget.day);
+    setState(() {
+      currMaxTemp = weather.maxTemp.toString();
+      currClimate = weather.climate;
+      currdate = weather.date;
+      currMinTemp = weather.minTemp.toString();
+      print(currClimate + "...");
+    });
+  }
 
   String getImage({required String currClimate}) {
     return currClimate == "Sunny"

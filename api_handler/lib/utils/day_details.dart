@@ -1,3 +1,5 @@
+import 'package:api_handler/model/forecast_weather.dart';
+import 'package:api_handler/services/api_services.dart';
 import 'package:api_handler/utils/rounded_image.dart';
 import 'package:flutter/material.dart';
 
@@ -23,27 +25,28 @@ class _DayDetailsCardState extends State<DayDetailsCard> {
 
   String currClimate = "";
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchForecastWeather();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    fetchForecastWeather();
+  }
 
-  // fetchForecastWeather() async {
-  //   Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
-  //   ForecastWeather weather = ForecastWeather.fromJson(json, widget.day);
-  //   setState(() {
-  //     currUv = weather.uv.toString();
-  //     currWindspeed = weather.windSpeed.toString();
-  //     currHumidity = weather.humidity.toString();
-  //     currSunrise = weather.sunrise;
-  //     hour1 = weather.hour1;
-  //     hour2 = weather.hour2;
-  //     hour3 = weather.hour3;
-  //     hour4 = weather.hour4;
-  //     currClimate = weather.climate;
-  //   });
-  // }
+  fetchForecastWeather() async {
+    Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
+    ForecastWeather weather = ForecastWeather.fromJson(json, widget.day);
+    print(widget.day);
+    setState(() {
+      currUv = weather.uv.toString();
+      currWindspeed = weather.windSpeed.toString();
+      currHumidity = weather.humidity.toString();
+      currSunrise = weather.sunrise;
+      hour1 = weather.hour1;
+      hour2 = weather.hour2;
+      hour3 = weather.hour3;
+      hour4 = weather.hour4;
+      currClimate = weather.climate;
+    });
+  }
 
   String getImage({required String currClimate}) {
     return currClimate == "Sunny"
@@ -137,38 +140,34 @@ class _DayDetailsCardState extends State<DayDetailsCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   RoundedImage(
-                    devHeight: widget.devHeight,
-                    climate:
-                        'wind', //getImage(currClimate: hour1['condition']['text']),
-                    time: '10.00', //(hour1['time'].split(" ")[1]) ?? 'N/A',
-                    degree: '23', //'${hour1['temp_c']}'
-                  ),
+                      devHeight: widget.devHeight,
+                      climate:
+                          getImage(currClimate: hour1['condition']['text']),
+                      time: (hour1['time'].split(" ")[1]) ?? 'N/A',
+                      degree: '${hour1['temp_c']}'),
                   RoundedImage(
-                    devHeight: widget.devHeight,
-                    climate:
-                        'wind', //getImage(currClimate: hour2['condition']['text']),
-                    time: '10.00', //(hour2['time'].split(" ")[1]) ?? 'N/A',
-                    degree: '23', //'${hour2['temp_c']}'
-                  ),
+                      devHeight: widget.devHeight,
+                      climate:
+                          getImage(currClimate: hour2['condition']['text']),
+                      time: (hour2['time'].split(" ")[1]) ?? 'N/A',
+                      degree: '${hour2['temp_c']}'),
                   RoundedImage(
                       devHeight: widget.devHeight,
                       climate: 'sunset',
                       time: currSunrise,
                       degree: 'Sunrise'),
                   RoundedImage(
-                    devHeight: widget.devHeight,
-                    climate:
-                        'wind', //getImage(currClimate: hour3['condition']['text']),
-                    time: '10.00', //(hour3['time'].split(" ")[1]) ?? 'N/A',
-                    degree: '23', //'${hour3['temp_c']}'
-                  ),
+                      devHeight: widget.devHeight,
+                      climate:
+                          getImage(currClimate: hour3['condition']['text']),
+                      time: (hour3['time'].split(" ")[1]) ?? 'N/A',
+                      degree: '${hour3['temp_c']}'),
                   RoundedImage(
-                    devHeight: widget.devHeight,
-                    climate:
-                        'wind', //getImage(currClimate: hour4['condition']['text']),
-                    time: '10.00', //(hour4['time'].split(" ")[1]) ?? 'N/A',
-                    degree: '23', //'${hour4['temp_c']}'
-                  ),
+                      devHeight: widget.devHeight,
+                      climate:
+                          getImage(currClimate: hour4['condition']['text']),
+                      time: (hour4['time'].split(" ")[1]) ?? 'N/A',
+                      degree: '${hour4['temp_c']}'),
                 ],
               ),
             ],

@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:api_handler/model/current_weather.dart';
+import 'package:api_handler/services/api_services.dart';
 import 'package:flutter/material.dart';
 
 class TodayDetails extends StatefulWidget {
@@ -12,42 +14,42 @@ class TodayDetails extends StatefulWidget {
 }
 
 class _TodayDetailsState extends State<TodayDetails> {
-  String currMaxTemp = "30",
-      currClimate = "clouds",
-      currHumidity = "21",
+  String currMaxTemp = "",
+      currClimate = "",
+      currHumidity = "",
       currLastUpdated = "",
-      currMinTemp = "20",
-      currTemp = "22",
-      currUv = "10",
-      currWindspeed = "23";
+      currMinTemp = "",
+      currTemp = "",
+      currUv = "",
+      currWindspeed = "";
 
   String currdate = "", currtime = "", currmonth = "";
 
   @override
   void initState() {
     super.initState();
-    // fetchWeather();
+    fetchWeather();
     getDateAndTime();
   }
 
   int currHour = DateTime.now().hour;
 
-  // void fetchWeather() async {
-  //   Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
-  //   // print(json);
-  //   CurrentWeather weather = CurrentWeather.fromJson(json);
-  //   setState(() {
-  //     currMaxTemp = weather.maxTemp.toString();
-  //     currClimate = weather.climate;
-  //     currHumidity = weather.humidity.toString();
-  //     currLastUpdated = weather.lastUpdated;
-  //     currMinTemp = weather.minTemp.toString();
-  //     currTemp = weather.temp.toString();
-  //     currUv = weather.uv.toString();
-  //     currWindspeed = weather.windSpeed.toString();
-  //   });
-  //   print(currClimate);
-  // }
+  void fetchWeather() async {
+    Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
+    // print(json);
+    CurrentWeather weather = CurrentWeather.fromJson(json);
+    setState(() {
+      currMaxTemp = weather.maxTemp.toString();
+      currClimate = weather.climate;
+      currHumidity = weather.humidity.toString();
+      currLastUpdated = weather.lastUpdated;
+      currMinTemp = weather.minTemp.toString();
+      currTemp = weather.temp.toString();
+      currUv = weather.uv.toString();
+      currWindspeed = weather.windSpeed.toString();
+    });
+    // print(currClimate);
+  }
 
   void getDateAndTime() {
     DateTime dt = DateTime.now();

@@ -1,3 +1,5 @@
+import 'package:api_handler/model/current_weather.dart';
+import 'package:api_handler/services/api_services.dart';
 import 'package:api_handler/utils/day_card.dart';
 import 'package:api_handler/utils/day_details.dart';
 import 'package:api_handler/utils/rounded_image.dart';
@@ -18,24 +20,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> hour1 = {}, hour2 = {}, hour3 = {}, hour4 = {};
   String currClimate = "";
   int currHour = DateTime.now().hour;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchWeather();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    fetchWeather();
+  }
 
-  // void fetchWeather() async {
-  //   Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
-  //   // print(json);
-  //   CurrentWeather weather = CurrentWeather.fromJson(json);
-  //   setState(() {
-  //     hour1 = weather.hour1;
-  //     hour2 = weather.hour2;
-  //     hour3 = weather.hour3;
-  //     hour4 = weather.hour4;
-  //     currClimate = weather.climate;
-  //   });
-  // }
+  void fetchWeather() async {
+    Map<String, dynamic> json = await ApiService().fetchDataFromWeatherAPI();
+    // print(json);
+    CurrentWeather weather = CurrentWeather.fromJson(json);
+    setState(() {
+      hour1 = weather.hour1;
+      hour2 = weather.hour2;
+      hour3 = weather.hour3;
+      hour4 = weather.hour4;
+      currClimate = weather.climate;
+    });
+  }
 
   String getImage({required String currClimate}) {
     return currClimate == "Sunny"
@@ -165,40 +167,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             RoundedImage(
                                 devHeight: devHeight,
-                                climate: getImage(
-                                    currClimate:
-                                        'sun'), //getImage(currClimate: currClimate),
-                                time:
-                                    '8.00', //(hour1['time'].split(" ")[1]) ?? 'N/A',
-                                degree: '29' //'${hour1['temp_c']}'
-                                ),
+                                climate: getImage(currClimate: currClimate),
+                                time: (hour1['time'].split(" ")[1]) ?? 'N/A',
+                                degree: '${hour1['temp_c']}'),
                             RoundedImage(
-                              devHeight: devHeight,
-                              climate: getImage(
-                                  currClimate:
-                                      'sun'), //getImage(currClimate: currClimate),
-                              time:
-                                  '9.00', //(hour2['time'].split(" ")[1]) ?? 'N/A',
-                              degree: '19', //'${hour2['temp_c']}'
-                            ),
+                                devHeight: devHeight,
+                                climate: getImage(currClimate: currClimate),
+                                time: (hour2['time'].split(" ")[1]) ?? 'N/A',
+                                degree: '${hour2['temp_c']}'),
                             RoundedImage(
-                              devHeight: devHeight,
-                              climate: getImage(
-                                  currClimate:
-                                      'sun'), //getImage(currClimate: currClimate),
-                              time:
-                                  '10.00', //(hour3['time'].split(" ")[1]) ?? 'N/A',
-                              degree: '20', //'${hour3['temp_c']}'
-                            ),
+                                devHeight: devHeight,
+                                climate: getImage(currClimate: currClimate),
+                                time: (hour3['time'].split(" ")[1]) ?? 'N/A',
+                                degree: '${hour3['temp_c']}'),
                             RoundedImage(
-                              devHeight: devHeight,
-                              climate: getImage(
-                                  currClimate:
-                                      'sun'), //getImage(currClimate: currClimate),
-                              time:
-                                  '11.00', // (hour4['time'].split(" ")[1]) ?? 'N/A',
-                              degree: '21', //'${hour4['temp_c']}'
-                            ),
+                                devHeight: devHeight,
+                                climate: getImage(currClimate: currClimate),
+                                time: (hour4['time'].split(" ")[1]) ?? 'N/A',
+                                degree: '${hour4['temp_c']}'),
                           ],
                         ),
                       ),
