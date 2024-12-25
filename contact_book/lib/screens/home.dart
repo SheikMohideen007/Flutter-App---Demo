@@ -1,4 +1,6 @@
 import 'package:contact_book/screens/create.dart';
+import 'package:contact_book/screens/edit.dart';
+import 'package:contact_book/screens/view.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,6 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
+        title: Text('Contact Book'),
+        centerTitle: true,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(20),
@@ -44,25 +48,56 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget contactCard({required String name, required String contactNo}) {
     return Padding(
       padding: EdgeInsets.only(bottom: devHeight * 0.015),
-      child: Card(
-        elevation: 5,
-        child: ListTile(
-          title: Text(name),
-          subtitle: Text(contactNo),
-          trailing: SizedBox(
-            width: devWidth * 0.25,
-            child: Row(
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.edit,
-                      color: Colors.green,
-                    )),
-                IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.delete, color: Colors.red)),
-              ],
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => ViewScreen()));
+        },
+        child: Card(
+          elevation: 5,
+          child: ListTile(
+            title: Text(name),
+            subtitle: Text(contactNo),
+            trailing: SizedBox(
+              width: devWidth * 0.25,
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Edit()));
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        color: Colors.green,
+                      )),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Delete Contact'),
+                                content: Text(
+                                    'Are you sure want to delete this contact?'),
+                                actions: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Yes')),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('No')),
+                                ],
+                              );
+                            });
+                      },
+                      icon: Icon(Icons.delete, color: Colors.red)),
+                ],
+              ),
             ),
           ),
         ),
