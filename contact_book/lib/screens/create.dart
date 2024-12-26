@@ -1,3 +1,5 @@
+import 'package:contact_book/model/user_model.dart';
+import 'package:contact_book/service/user_service.dart';
 import 'package:flutter/material.dart';
 
 class CreateContact extends StatefulWidget {
@@ -13,6 +15,7 @@ class _CreateContactState extends State<CreateContact> {
   TextEditingController description = TextEditingController();
   bool isNameEmpty = false, isContactEmpty = false, isDescEmpty = false;
   double devHeight = 0.0, devWidth = 0.0;
+
   @override
   Widget build(BuildContext context) {
     devHeight = MediaQuery.of(context).size.height;
@@ -67,12 +70,27 @@ class _CreateContactState extends State<CreateContact> {
           ),
           SizedBox(height: devHeight * 0.02),
           ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isNameEmpty = name.text.trim().isEmpty ? true : false;
-                  isContactEmpty = contactNo.text.trim().isEmpty ? true : false;
-                  isDescEmpty = description.text.trim().isEmpty ? true : false;
-                });
+              onPressed: () async {
+                setState(() {});
+                isNameEmpty = name.text.trim().isEmpty ? true : false;
+                isContactEmpty = contactNo.text.trim().isEmpty ? true : false;
+                isDescEmpty = description.text.trim().isEmpty ? true : false;
+
+                //if all input has some content in it
+                if (!isNameEmpty && !isContactEmpty && !isDescEmpty) {
+                  UserService userService = UserService();
+                  UserModel user = UserModel();
+                  user.name = name.text;
+                  user.contactNo = contactNo.text;
+                  user.description = description.text;
+
+                  var result = await userService.saveUser(user);
+                  print('value is = $result');
+                  Navigator.pop(context, result);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('All boxes needed to be fill')));
+                }
               },
               child: Text('Save Details'))
         ],

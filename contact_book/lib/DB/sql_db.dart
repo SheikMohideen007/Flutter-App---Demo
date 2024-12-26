@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DbService {
+class SQLDbService {
   // factory DbService() => instance;
   // static final DbService _instance = DbService._internal();
 
@@ -17,7 +17,7 @@ class DbService {
     //data/user/b/0
     var path = join(currPath, 'demo_db');
     //data/user/b/0/demo_db
-    return openDatabase(path, onCreate: createTable);
+    return openDatabase(path, version: 1, onCreate: createTable);
   }
 
   //creating a Table in that demo_db
@@ -61,9 +61,19 @@ class DbService {
     var connection = await database;
     return await connection!.delete(table, where: 'id=?', whereArgs: [userId]);
   }
+
   /* Read Operations */
 
   //read all user
+  Future<List<Map<String, dynamic>>> readAllUsers(
+      {required String table}) async {
+    var connection = await database;
+    return await connection!.query(table);
+  }
 
-  //read particular user;
+  //read particular user by using their user id;
+  readUserById({required String table, required int userId}) async {
+    var connection = await database;
+    return await connection!.query(table, where: 'id=?', whereArgs: [userId]);
+  }
 }

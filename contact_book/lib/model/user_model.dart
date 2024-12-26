@@ -4,18 +4,25 @@ class UserModel {
   String? description;
   int? id;
 
-  UserModel(
-      {required this.name,
-      required this.contactNo,
-      required this.description,
-      required this.id});
+  // UserModel({
+  //   required this.name,
+  //   required this.contactNo,
+  //   required this.description,
+  //   // required this.id
+  // });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-        id: json['id'],
-        name: json['name'],
-        contactNo: json['contactNo'],
-        description: json['description']);
+  UserModel fromJson(Map<String, dynamic> json) {
+    // return UserModel(
+    //     id: json['id'],
+    //     name: json['name'],
+    //     contactNo: json['contactNo'],
+    //     description: json['description']);
+    UserModel user = UserModel();
+    user.id = json['id'];
+    user.name = json['name'];
+    user.contactNo = json['contactNo'];
+    user.description = json['description'];
+    return user;
   }
 
   Map<String, dynamic> toJson() {

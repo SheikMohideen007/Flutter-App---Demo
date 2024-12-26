@@ -1,6 +1,8 @@
+import 'package:contact_book/model/user_model.dart';
 import 'package:contact_book/screens/create.dart';
 import 'package:contact_book/screens/edit.dart';
 import 'package:contact_book/screens/view.dart';
+import 'package:contact_book/service/user_service.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,7 +13,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<Map<String, dynamic>>? userList;
+  UserService userService = UserService();
   double devHeight = 0.0, devWidth = 0.0;
+
+  readUsersTable() async {
+    userList = [];
+
+    var users = await userService.readAllUsers();
+    setState(() {
+      users.forEach((user) {
+        userList!.add(user);
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    readUsersTable();
+  }
+
   @override
   Widget build(BuildContext context) {
     devHeight = MediaQuery.of(context).size.height;
@@ -26,26 +48,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20))),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: devWidth * 0.02),
-        child: Column(
-          children: [
-            SizedBox(height: devHeight * 0.02),
-            contactCard(name: 'Sheik', contactNo: '1234567890'),
-            contactCard(name: 'ShFluttereik', contactNo: '1234567890'),
-          ],
-        ),
-      ),
+      body: ListView.builder(
+          itemCount: userList!.length,
+          itemBuilder: (context, index) {
+            UserModel user = UserModel().fromJson(userList![index]);
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: devWidth * 0.02),
+              child: contactCard(
+                  name: user.name!, contactNo: user.contactNo!, id: user.id!),
+            );
+          }),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CreateContact()));
+                    MaterialPageRoute(builder: (context) => CreateContact()))
+                .then((value) {
+              if (value != null) {
+                readUsersTable();
+                snackBarMessage(msg: 'Contact Saved !!!');
+              } else {
+                snackBarMessage(msg: 'Error when save the Contact');
+              }
+            });
           },
           child: Icon(Icons.add)),
     );
   }
 
-  Widget contactCard({required String name, required String contactNo}) {
+  Widget contactCard(
+      {required String name, required String contactNo, required int id}) {
     return Padding(
       padding: EdgeInsets.only(bottom: devHeight * 0.015),
       child: GestureDetector(
@@ -103,5 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  snackBarMessage({required String msg}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }
