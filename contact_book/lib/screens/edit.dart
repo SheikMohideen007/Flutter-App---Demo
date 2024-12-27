@@ -1,25 +1,39 @@
+import 'package:contact_book/model/user_model.dart';
+import 'package:contact_book/service/user_service.dart';
 import 'package:flutter/material.dart';
 
 class Edit extends StatefulWidget {
-  const Edit({super.key});
+  final int id;
+  const Edit({super.key, required this.id});
 
   @override
   State<Edit> createState() => _EditState();
 }
 
 class _EditState extends State<Edit> {
+  UserService userService = UserService();
+  UserModel user = UserModel();
   TextEditingController name = TextEditingController();
   TextEditingController contactNo = TextEditingController();
   TextEditingController description = TextEditingController();
   bool isNameEmpty = false, isContactEmpty = false, isDescEmpty = false;
   double devHeight = 0.0, devWidth = 0.0;
+  late Future<UserModel> result;
 
-  readUser() {}
+  Future<UserModel> readUser() async {
+    // print(widget.id);
+    var currUser = await userService.readOnlyOneUser(id: widget.id);
+
+    setState(() {
+      user = user.fromJson(currUser[0]);
+    });
+    return user;
+  }
 
   @override
   void initState() {
     super.initState();
-    readUser();
+    result = readUser();
   }
 
   @override
@@ -36,56 +50,70 @@ class _EditState extends State<Edit> {
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20))),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: devHeight * 0.02),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: devWidth * 0.05),
-            child: TextField(
-              controller: name,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter the name',
-                  errorText: isNameEmpty ? "Name Shouldn't be Empty" : null),
-            ),
-          ),
-          SizedBox(height: devHeight * 0.02),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: devWidth * 0.05),
-            child: TextField(
-              controller: contactNo,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter the contact Number',
-                  errorText: isContactEmpty
-                      ? "Contact Number Shouldn't be Empty"
-                      : null),
-            ),
-          ),
-          SizedBox(height: devHeight * 0.02),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: devWidth * 0.05),
-            child: TextField(
-              controller: description,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter the description',
-                  errorText:
-                      isDescEmpty ? "Description Shouldn't be Empty" : null),
-            ),
-          ),
-          SizedBox(height: devHeight * 0.02),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isNameEmpty = name.text.trim().isEmpty ? true : false;
-                  isContactEmpty = contactNo.text.trim().isEmpty ? true : false;
-                  isDescEmpty = description.text.trim().isEmpty ? true : false;
-                });
-              },
-              child: Text('Save Details'))
-        ],
-      ),
+      body: FutureBuilder(
+          future: result,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            name.text = user.name!;
+            contactNo.text = user.contactNo!;
+            description.text = user.description!;
+            return Column(
+              children: [
+                SizedBox(height: devHeight * 0.02),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: devWidth * 0.05),
+                  child: TextField(
+                    controller: name,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter the name',
+                        errorText:
+                            isNameEmpty ? "Name Shouldn't be Empty" : null),
+                  ),
+                ),
+                SizedBox(height: devHeight * 0.02),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: devWidth * 0.05),
+                  child: TextField(
+                    controller: contactNo,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter the contact Number',
+                        errorText: isContactEmpty
+                            ? "Contact Number Shouldn't be Empty"
+                            : null),
+                  ),
+                ),
+                SizedBox(height: devHeight * 0.02),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: devWidth * 0.05),
+                  child: TextField(
+                    controller: description,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter the description',
+                        errorText: isDescEmpty
+                            ? "Description Shouldn't be Empty"
+                            : null),
+                  ),
+                ),
+                SizedBox(height: devHeight * 0.02),
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isNameEmpty = name.text.trim().isEmpty ? true : false;
+                        isContactEmpty =
+                            contactNo.text.trim().isEmpty ? true : false;
+                        isDescEmpty =
+                            description.text.trim().isEmpty ? true : false;
+                      });
+                    },
+                    child: Text('Save Details'))
+              ],
+            );
+          }),
     );
   }
 }

@@ -16,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>>? userList;
   UserService userService = UserService();
   double devHeight = 0.0, devWidth = 0.0;
+  TextEditingController searchQuery = TextEditingController();
 
   readUsersTable() async {
     userList = [];
@@ -49,9 +50,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 bottomRight: Radius.circular(20))),
       ),
       body: ListView.builder(
-          itemCount: userList!.length,
+          itemCount: userList!.length + 1,
           itemBuilder: (context, index) {
-            UserModel user = UserModel().fromJson(userList![index]);
+            if (index == 0) {
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: devWidth * 0.05, vertical: devHeight * 0.01),
+                child: TextField(
+                  controller: searchQuery,
+                  decoration: InputDecoration(
+                      suffixIcon: Icon(Icons.search),
+                      hintText: 'Search Contact',
+                      border: OutlineInputBorder()),
+                ),
+              );
+            }
+            UserModel user = UserModel().fromJson(userList![index - 1]);
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: devWidth * 0.02),
               child: contactCard(
@@ -81,8 +95,8 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: EdgeInsets.only(bottom: devHeight * 0.015),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => ViewScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ViewScreen(id: id)));
         },
         child: Card(
           elevation: 5,
@@ -95,8 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   IconButton(
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Edit()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Edit(id: id)));
                       },
                       icon: Icon(
                         Icons.edit,
@@ -113,8 +129,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'Are you sure want to delete this contact?'),
                                 actions: [
                                   ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: () async {
+                                        await userService.deleteUser(id: id);
+                                        readUsersTable();
                                         Navigator.pop(context);
+                                        snackBarMessage(
+                                            msg: 'Deleted Successfully');
                                       },
                                       child: Text('Yes')),
                                   TextButton(
