@@ -11,6 +11,7 @@ class UserModel {
   //   // required this.id
   // });
 
+// DeSerialization
   UserModel fromJson(Map<String, dynamic> json) {
     // return UserModel(
     //     id: json['id'],
@@ -25,6 +26,7 @@ class UserModel {
     return user;
   }
 
+// Serialization
   Map<String, dynamic> toJson() {
     return {
       'id': id,

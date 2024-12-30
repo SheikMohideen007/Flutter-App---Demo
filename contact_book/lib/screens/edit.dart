@@ -26,6 +26,9 @@ class _EditState extends State<Edit> {
 
     setState(() {
       user = user.fromJson(currUser[0]);
+      name.text = user.name!;
+      contactNo.text = user.contactNo!;
+      description.text = user.description!;
     });
     return user;
   }
@@ -56,9 +59,7 @@ class _EditState extends State<Edit> {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
-            name.text = user.name!;
-            contactNo.text = user.contactNo!;
-            description.text = user.description!;
+
             return Column(
               children: [
                 SizedBox(height: devHeight * 0.02),
@@ -101,14 +102,31 @@ class _EditState extends State<Edit> {
                 ),
                 SizedBox(height: devHeight * 0.02),
                 ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isNameEmpty = name.text.trim().isEmpty ? true : false;
-                        isContactEmpty =
-                            contactNo.text.trim().isEmpty ? true : false;
-                        isDescEmpty =
-                            description.text.trim().isEmpty ? true : false;
-                      });
+                    onPressed: () async {
+                      setState(() {});
+                      isNameEmpty = name.text.trim().isEmpty ? true : false;
+                      isContactEmpty =
+                          contactNo.text.trim().isEmpty ? true : false;
+                      isDescEmpty =
+                          description.text.trim().isEmpty ? true : false;
+
+                      //if all input has some content in it
+                      if (!isNameEmpty && !isContactEmpty && !isDescEmpty) {
+                        UserService userService = UserService();
+                        UserModel user = UserModel();
+                        user.name = name.text;
+                        user.contactNo = contactNo.text;
+                        user.description = description.text;
+                        user.id = widget.id;
+                        print(user.toJson());
+                        print(widget.id);
+                        await userService.updateUser(
+                            id: widget.id, updatedData: user.toJson());
+                        Navigator.pop(context, result);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('All boxes needed to be fill')));
+                      }
                     },
                     child: Text('Save Details'))
               ],

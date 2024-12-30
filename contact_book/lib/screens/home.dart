@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   UserService userService = UserService();
   double devHeight = 0.0, devWidth = 0.0;
   TextEditingController searchQuery = TextEditingController();
+  bool isSearchTapped = false;
 
   readUsersTable() async {
     userList = [];
@@ -49,29 +50,49 @@ class _HomeScreenState extends State<HomeScreen> {
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20))),
       ),
-      body: ListView.builder(
-          itemCount: userList!.length + 1,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: devWidth * 0.05, vertical: devHeight * 0.01),
-                child: TextField(
-                  controller: searchQuery,
-                  decoration: InputDecoration(
-                      suffixIcon: Icon(Icons.search),
-                      hintText: 'Search Contact',
-                      border: OutlineInputBorder()),
-                ),
-              );
-            }
-            UserModel user = UserModel().fromJson(userList![index - 1]);
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: devWidth * 0.02),
-              child: contactCard(
-                  name: user.name!, contactNo: user.contactNo!, id: user.id!),
-            );
-          }),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: devWidth * 0.05, vertical: devHeight * 0.01),
+            child: TextField(
+              onTap: () {
+                setState(() {
+                  isSearchTapped = true;
+                });
+              },
+              controller: searchQuery,
+              decoration: InputDecoration(
+                  suffixIcon: searchQuery.text.trim().isEmpty
+                      ? IconButton(onPressed: () {}, icon: Icon(Icons.search))
+                      : IconButton(
+                          onPressed: () {
+                            isSearchTapped = false;
+                          },
+                          icon: Icon(Icons.close)),
+                  hintText: 'Search Contact',
+                  border: OutlineInputBorder()),
+            ),
+          ),
+          !isSearchTapped
+              ? Expanded(
+                  child: ListView.builder(
+                      itemCount: userList!.length,
+                      itemBuilder: (context, index) {
+                        UserModel user = UserModel().fromJson(userList![index]);
+                        return Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: devWidth * 0.02),
+                          child: contactCard(
+                              name: user.name!,
+                              contactNo: user.contactNo!,
+                              id: user.id!),
+                        );
+                      }),
+                )
+              : Expanded(child: buildSuggestion()),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(context,
@@ -89,6 +110,46 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget buildSuggestion() {
+    // 1 2 3 4 5
+    List<Map<String, dynamic>> suggestions = userList!.where((list) {
+      List result = list.values.toList();
+      bool isMatched = false;
+      for (int i = 0; i < result.length; i++) {
+        result[i] = result[i].toString().toLowerCase();
+        final typedQuery = searchQuery.text.toLowerCase();
+        if (result[i].contains(typedQuery)) {
+          isMatched = true;
+        }
+        // print(result[i]);
+      }
+      return isMatched;
+    }).toList();
+    return suggestions.isEmpty
+        ? Text('No Matching Found')
+        : ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: (context, index) {
+              UserModel user = UserModel().fromJson(suggestions[index]);
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: devWidth * 0.02),
+                child: contactCard(
+                    name: user.name!, contactNo: user.contactNo!, id: user.id!),
+              );
+            });
+  }
+
+//  Padding(
+//                 padding: EdgeInsets.symmetric(
+//                     horizontal: devWidth * 0.05, vertical: devHeight * 0.01),
+//                 child: TextField(
+//                   controller: searchQuery,
+//                   decoration: InputDecoration(
+//                       suffixIcon: Icon(Icons.search),
+//                       hintText: 'Search Contact',
+//                       border: OutlineInputBorder()),
+//                 ),
+//               );
   Widget contactCard(
       {required String name, required String contactNo, required int id}) {
     return Padding(
@@ -110,9 +171,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   IconButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Edit(id: id)));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Edit(id: id)))
+                            .then((value) {
+                          if (value != null) {
+                            readUsersTable();
+                            snackBarMessage(msg: 'Updated Successfully !!!');
+                          } else {
+                            snackBarMessage(
+                                msg: 'Error when update the Contact');
+                          }
+                        });
                       },
                       icon: Icon(
                         Icons.edit,
