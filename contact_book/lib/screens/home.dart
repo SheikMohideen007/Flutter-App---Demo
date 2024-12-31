@@ -61,13 +61,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   isSearchTapped = true;
                 });
               },
+              onChanged: (value) {
+                setState(() {
+                  searchQuery.text = value;
+                });
+              },
               controller: searchQuery,
               decoration: InputDecoration(
                   suffixIcon: searchQuery.text.trim().isEmpty
                       ? IconButton(onPressed: () {}, icon: Icon(Icons.search))
                       : IconButton(
                           onPressed: () {
-                            isSearchTapped = false;
+                            setState(() {
+                              isSearchTapped = false;
+                              searchQuery.clear();
+                              // searchQuery.text="";
+                            });
                           },
                           icon: Icon(Icons.close)),
                   hintText: 'Search Contact',
@@ -126,7 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
       return isMatched;
     }).toList();
     return suggestions.isEmpty
-        ? Text('No Matching Found')
+        ? Padding(
+            padding: EdgeInsets.only(top: devHeight * 0.1),
+            child: Text('No Matching Found'),
+          )
         : ListView.builder(
             itemCount: suggestions.length,
             itemBuilder: (context, index) {
