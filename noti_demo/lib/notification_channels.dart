@@ -37,4 +37,16 @@ class NotificationChannels {
         // ledColor: Colors.white
         );
   }
+
+  NotificationChannel actionNotificationChannel() {
+    return NotificationChannel(
+        channelKey: 'action_channel',
+        channelDescription: 'Channel for testing action notifications',
+        channelName: 'Action Notifications',
+        playSound: true,
+        enableLights: true,
+        importance: NotificationImportance.High
+        // ledColor: Colors.white
+        );
+  }
 }

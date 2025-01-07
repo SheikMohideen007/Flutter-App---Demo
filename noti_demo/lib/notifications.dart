@@ -50,10 +50,26 @@ class Notifications {
             // month: 1,
             // day: 6,
             // hour: 8,
-            // minute: 6,
+            // minute: 1,
             // second: 0,
             // timeZone: 'Asia/Kolkata'
             // timeZone: 'IST+5.30'
             repeats: true));
+  }
+
+  void actionNotification() async {
+    // final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+    AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 1,
+          channelKey: 'action_channel',
+          title: 'Check out this image !! guys from scheduled',
+          body:
+              'Here is a thumbnail picture for you guys !!!', // network url or asset url
+        ),
+        actionButtons: [
+          NotificationActionButton(key: 'YES', label: 'Yes'),
+          NotificationActionButton(key: 'NO', label: 'No'),
+        ]);
   }
 }
