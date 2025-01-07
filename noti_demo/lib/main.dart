@@ -7,7 +7,12 @@ void main() {
   // https://www.appicon.co/
   // resource://drawable/res_app_icon
   AwesomeNotifications().initialize(
-      '', [NotificationChannels().getBasicNotification()],
+      '',
+      [
+        NotificationChannels().basicNotificationChannel(),
+        NotificationChannels().bigPictureNotificationChannel(),
+        NotificationChannels().scheduledNotificationChannel()
+      ],
       debug: true);
 
   // to getting permission from user to send the notification
@@ -29,7 +34,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        useMaterial3: false,
       ),
       home: HomeScreen(),
     );

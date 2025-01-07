@@ -1,5 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:noti_demo/notifications.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,14 +23,24 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             ElevatedButton(
                 onPressed: () {
-                  AwesomeNotifications().createNotification(
-                      content: NotificationContent(
-                          id: 1, //should be unique
-                          channelKey: 'basic_channel',
-                          title: 'hello bro',
-                          body: 'This is a notification demo'));
+                  Notifications().getBasicNotification();
                 },
-                child: Text('Get Notification'))
+                child: Text('Basic Notification')),
+            ElevatedButton(
+                onPressed: () {
+                  Notifications().getBigPictureNotification();
+                },
+                child: Text('BigPicture Notification')),
+            ElevatedButton(
+                onPressed: () {
+                  Notifications().getBigPictureNotification2();
+                },
+                child: Text('BigPicture Notification 2')),
+            ElevatedButton(
+                onPressed: () {
+                  Notifications().scheduledNotification();
+                },
+                child: Text('Scheduled Notification 2'))
           ],
         ),
       ),
